@@ -7,7 +7,7 @@ import (
 )
 
 func PrintHangman(attempt int) {
-	path := "funcs/hangman.txt"
+	path := "ressources/hangman.txt"
 	startReadLine := 1
 
 	switch attempt {

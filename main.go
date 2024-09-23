@@ -6,9 +6,11 @@ import (
 )
 
 func main() {
-	Attempts := 10
+	Attempts := 3
 
 	fmt.Printf("Good Luck, you have %v attempts", Attempts)
 
-	b1hangman.PrintHangman(9)
+	b1hangman.PrintHangman(Attempts)
+	toFind := b1hangman.ChooseWordToFind(1)
+	fmt.Print(toFind)
 }
