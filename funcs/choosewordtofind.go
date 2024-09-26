@@ -48,7 +48,7 @@ func ChooseWordToFind(difficulty int) string {
 
 	for scanner2.Scan() {
 		if lineRead == lineToRead {
-			toReturn = "\n" + scanner2.Text()
+			toReturn = scanner2.Text()
 			break
 		}
 		lineRead++
