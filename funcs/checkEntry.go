@@ -1,11 +1,10 @@
 package b1hangman
 
-func CheckEntry(letter byte, toFind string, masked string) string{
-	maskedAsRune := []rune(masked)
+func CheckEntry(input rune, toFind []rune, masked []rune) []rune {
 	for i, char := range toFind {
-		if char == rune(letter) {
-			maskedAsRune[i] = rune(letter)
+		if char == input {
+			masked[i] = RuneToUpper(input)
 		}
 	}
-	return string(maskedAsRune)
+	return masked
 }

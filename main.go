@@ -5,7 +5,6 @@ import (
 	"fmt"
 	b1hangman "fr/alkaniel/hangman-cli/funcs"
 	"os"
-	"strings"
 )
 
 func main() {
@@ -18,16 +17,15 @@ func main() {
 		if Attempts < 10 {
 			b1hangman.PrintHangman(Attempts)
 		}
-		fmt.Println(masked)
+		PrintRunesForHangman(masked)
 		reader := bufio.NewReader(os.Stdin)
 		fmt.Print("Choose: ")
-		input, _ := reader.ReadString('\n')
-		input = strings.TrimSpace(strings.ToLower(input))
-		if strings.Contains(toFind, input) {
-			masked = b1hangman.CheckEntry(input[0], toFind, masked)
-			if !strings.Contains(masked, "_"){
-				fmt.Println(masked + "\n")
-				fmt.Println("Congrats")
+		input, _, _ := reader.ReadRune()
+		if b1hangman.ContainsForRunes(toFind, input) {
+			masked= b1hangman.CheckEntry(input, toFind, masked)
+			if !b1hangman.ContainsForRunes(masked, '_'){
+				PrintRunesForHangman(masked)
+				fmt.Println("\nCongrats !")
 				break
 			}
 		} else {
@@ -37,9 +35,19 @@ func main() {
 			b1hangman.PrintHangman(Attempts)
 			fmt.Println("Game over")
 			fmt.Println("====================")
-			fmt.Printf("The word was : %v", toFind)
+			fmt.Print("The word was : ")
+			PrintRunesForHangman(toFind)
 			break
 		}
 	}
 }
 
+func PrintRunesForHangman(word []rune){
+	for i, r := range word{
+		fmt.Print(string(r) + " ")
+		if i < len(word) - 1 {
+			fmt.Print(" ")
+		}
+	}
+	fmt.Print("\n")
+}

@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-func ChooseWordToFind(difficulty int) string {
+func ChooseWordToFind(difficulty int) []rune {
 	path := "ressources/words.txt"
 
 	switch difficulty {
@@ -23,7 +23,7 @@ func ChooseWordToFind(difficulty int) string {
 	file, err := os.Open(path)
 	if err != nil {
 		toReturn = "Error opening file: open " + file.Name() + ": The system cannot find the file specified."
-		return toReturn
+		return []rune(toReturn)
 	}
 	defer file.Close()
 
@@ -38,7 +38,7 @@ func ChooseWordToFind(difficulty int) string {
 	_, err = file.Seek(0, 0)
 	if err != nil {
 		toReturn = "Eroor opening file: open" + path + ": The system connot find the file specified"
-		return toReturn
+		return []rune(toReturn)
 	}
 
 	scanner2 := bufio.NewScanner(file)
@@ -54,5 +54,11 @@ func ChooseWordToFind(difficulty int) string {
 		lineRead++
 	}
 
-	return toReturn
+	var toReturnAsRune []rune
+
+	for _, r := range toReturn{
+		toReturnAsRune = append(toReturnAsRune, r)
+	}
+
+	return []rune(toReturn)
 }
