@@ -2,6 +2,7 @@ package b1hangman
 
 import (
 	"math/rand"
+	"string"
 	"time"
 )
 
