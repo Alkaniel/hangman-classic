@@ -6,11 +6,12 @@ import (
 	"os"
 )
 
+/** PrintHangman a pour fonction de print le pendu selon les essais restant */
 func PrintHangman(attempt int) {
 	path := "ressources/hangman.txt"
 	startReadLine := 1
 
-	switch attempt {
+	switch attempt { // Le switch qui défini de le début de la lecture selon les essais restant.
 	case 9:
 		startReadLine = 1
 	case 8:
