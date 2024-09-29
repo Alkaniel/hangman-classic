@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	b1hangman "fr/alkaniel/hangman-cli/funcs"
+	"fr/alkaniel/hangman-cli/helpers"
 	"os"
 )
 
@@ -23,9 +24,9 @@ func main() {
 		reader := bufio.NewReader(os.Stdin) // Création d'un reader sur l'input
 		fmt.Print("Choose: ")
 		input, _, _ := reader.ReadRune() //Je set le reader pour qu'il lise une rune
-		if b1hangman.ContainsForRunes(toFind, input) { //boucle si la rune est une lettre du hangman
+		if helpers.ContainsForRunes(toFind, input) { //boucle si la rune est une lettre du hangman
 			masked= b1hangman.CheckEntry(input, toFind, masked) //Fonction mettre a jour le mot avec la nouvelle lettre
-			if !b1hangman.ContainsForRunes(masked, '_'){ //Checker si le mot est trouvé
+			if !helpers.ContainsForRunes(masked, '_'){ //Checker si le mot est trouvé
 				PrintRunesForHangman(masked)
 				fmt.Println("\nCongrats !")
 				break 

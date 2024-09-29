@@ -1,10 +1,11 @@
-	package b1hangman
+package b1hangman
 
-	import (
-		"math/rand"
-	)
+import (
+	"fr/alkaniel/hangman-cli/helpers"
+	"math/rand"
+)
 
-	/** Fonction qui masque mon mot en laissant un n nombre de lettre. N = (longeur du mot)/2 - 1 */
+/** Fonction qui masque mon mot en laissant un n nombre de lettre. N = (longeur du mot)/2 - 1 */
 	func MaskWord(toFind []rune) []rune {
 		var masked []rune // Celle qui vas être return
 		var notmask []rune //Liste de lettre à retirer
@@ -14,27 +15,11 @@
 			notmask = append(notmask, toFind[j]) 
 		}
 		for _, letter := range toFind { //Liste pour masquer le mot
-			if ContainsForRunes(notmask, letter) { //Check si la rune du mot est la lune de la lettre.
-				masked = append(masked, RuneToUpper(letter))
+			if helpers.ContainsForRunes(notmask, letter) { //Check si la rune du mot est la lune de la lettre.
+				masked = append(masked, helpers.RuneToUpper(letter))
 			} else {
 				masked = append(masked, '_')
 			}
 		}
 		return masked
-	}
-
-	func ContainsForRunes(letterNotMasked []rune, letter rune) bool {
-		for _, r := range letterNotMasked {
-			if r == letter {
-				return true
-			}
-		}
-		return false
-	}
-
-	func RuneToUpper(r rune) rune {
-		if r >= 'a' && r <= 'z' {
-			r = r - 32
-		}
-		return r
 	}
