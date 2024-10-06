@@ -25,7 +25,7 @@ var game = newGame()
 Je fais beaucoup de fonction externe pour rester le plus propre possible
 */
 func main() {
-	if os.Args[1] == "--startWith" { //Permet de lancer une partie avec la précedente sauvegarde
+	if len(os.Args) > 1 && os.Args[1] == "--startWith" { //Permet de lancer une partie avec la précedente sauvegarde
 		game.LoadGame()
 		os.Remove("save.json")
 		StartGameLoop(2) //Relance la partie précédemment lancée
@@ -49,25 +49,34 @@ func StartGameLoop(funct int) { //Fonction qui lance la boucle de jeu
 			b1hangman.PrintHangman(game.Attempts)
 		}
 		helpers.PrintHangmanWord(game.Masked) //Print le mot masqué
-		inputHelper() //Fonction qui permet de choisir une lettre 
-		if strings.Contains(game.ToFind, input) { 
-			game.UpdateMasked(b1hangman.CheckEntry(input, game.ToFind, game.Masked)) 
-			if !strings.Contains(game.Masked, "_") { 
-				helpers.PrintHangmanWord(game.Masked) 
-				fmt.Println("\nCongrats !")
+		input = inputHelper() //Fonction qui permet de choisir une lettre 
+		if len(input) > 1 {
+			if input == game.ToFind {
+				fmt.Println("Congrats !")
 				break
+		    } else {
+				game.Attempts -= 2
 			}
 		} else {
-			game.Attempts--
-		}
-		if game.Attempts == 0 {
-			b1hangman.PrintHangman(game.Attempts)
-			fmt.Println("Game over")
-			fmt.Println("====================")
-			fmt.Print("The word was : ")
-			helpers.PrintHangmanWord(game.ToFind)
-			break
-		}
+			if strings.Contains(game.ToFind, input) { 
+				game.UpdateMasked(b1hangman.CheckEntry(input, game.ToFind, game.Masked)) 
+				if !strings.Contains(game.Masked, "_") { 
+					helpers.PrintHangmanWord(game.Masked) 
+					fmt.Println("\nCongrats !")
+					break
+				}
+			} else {
+				game.Attempts--
+			}
+			if game.Attempts == 0 {
+				b1hangman.PrintHangman(game.Attempts)
+				fmt.Println("Game over")
+				fmt.Println("====================")
+				fmt.Print("The word was : ")
+				helpers.PrintHangmanWord(game.ToFind)
+				break
+			}
+		} 
 	}
 }
 
@@ -80,12 +89,12 @@ func inputHelper() string { //Fonction qui permet de choisir une lettre
 		game.SaveGame()
 		os.Exit(3)
 	} else { 
+		input = strings.ToLower(input)
 		if len(input) == 0 {
 			fmt.Println("Please enter a letter")
 			return inputHelper()
 		} else if len(input) > 1 {
-			fmt.Println("Please enter only one letter")
-			return inputHelper()
+			return input
 		} else {
 			input = string(input[0])
 		}
