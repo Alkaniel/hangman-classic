@@ -25,11 +25,11 @@ var game = newGame()
 Je fais beaucoup de fonction externe pour rester le plus propre possible
 */
 func main() {
-	if _, err := os.Stat("save.json"); err == nil {
+	if os.Args[1] == "--startWith" { //Permet de lancer une partie avec la précedente sauvegarde
 		game.LoadGame()
 		os.Remove("save.json")
 		StartGameLoop(2) //Relance la partie précédemment lancée
-	} else if os.IsNotExist(err) {
+	} else {
 		game.UpdateToFind(b1hangman.ChooseWordToFind(1)) //Fonction qui choisi mon nombre (Il pourra être set plus tard avec la difficulté, c'est preset)
 		game.UpdateMasked(b1hangman.MaskWord(game.ToFind))   //Fonction qui masque mon mot en laissant un n nombre de lettre. N = (longeur du mot)/2 - 1
 		game.UpdateAttempts(10) //Fonction qui set le nombre d'essai
