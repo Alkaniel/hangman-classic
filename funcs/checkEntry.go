@@ -1,13 +1,17 @@
 package b1hangman
 
-import "fr/alkaniel/hangman-cli/helpers"
+import (
+	"strings"
+)
 
 /** CheckEntry est un checker qui regarde si la proposition correspond à l'une des lettre du mot à chercher
 Ce qui renvoi le mot masqué avec les lettres en démasqué.*/
-func CheckEntry(input rune, toFind []rune, masked []rune) []rune {
+func CheckEntry(input string, toFind string, masked string) string {
 	for i, char := range toFind {
-		if char == input {
-			masked[i] = helpers.RuneToUpper(input)
+		if string(char) == input {
+			maskedRunes := []rune(masked)
+			maskedRunes[i] = []rune(strings.ToUpper(input))[0]
+			masked = string(maskedRunes)
 		}
 	}
 	return masked

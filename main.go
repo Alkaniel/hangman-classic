@@ -2,55 +2,139 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	b1hangman "fr/alkaniel/hangman-cli/funcs"
 	"fr/alkaniel/hangman-cli/helpers"
 	"os"
+	"strings"
 )
 
-/** Main est ma fonction coeur de mon code
-Je fais beaucoup de fonction externe pour rester le plus propre possible */
-func main() {
-	Attempts := 10 //Le nombre de vie de base
-	fmt.Printf("Good Luck, you have %v attempts\n", Attempts) //Phrase de début
-	toFind := b1hangman.ChooseWordToFind(1) //Fonction qui choisi mon nombre (Il pourra être set plus tard avec la difficulté, c'est preset)
-	masked := b1hangman.MaskWord(toFind) //Fonction qui masque mon mot en laissant un n nombre de lettre. N = (longeur du mot)/2 - 1
+var input string
 
-	for { // Début d'une boucle "infinie" dès qu'il y a "break", la boucle s'arrête
-		if Attempts < 10 { 
-			b1hangman.PrintHangman(Attempts) // Fonction qui print les différents états du pendu, si une vie est perdu.
+type hangmanData struct {
+	ToFind   string `json:"toFind"`
+	Masked   string `json:"masked"`
+	Attempts int `json:"Attempts"`
+}
+
+var game = newGame()
+
+/*
+* Main est ma fonction coeur de mon code
+Je fais beaucoup de fonction externe pour rester le plus propre possible
+*/
+func main() {
+	if _, err := os.Stat("save.json"); err == nil {
+		game.LoadGame()
+		os.Remove("save.json")
+		StartGameLoop(2) //Relance la partie précédemment lancée
+	} else if os.IsNotExist(err) {
+		game.UpdateToFind(b1hangman.ChooseWordToFind(1)) //Fonction qui choisi mon nombre (Il pourra être set plus tard avec la difficulté, c'est preset)
+		game.UpdateMasked(b1hangman.MaskWord(game.ToFind))   //Fonction qui masque mon mot en laissant un n nombre de lettre. N = (longeur du mot)/2 - 1
+		game.UpdateAttempts(10) //Fonction qui set le nombre d'essai
+		StartGameLoop(1) //Lance une première partie
+	}
+	
+}
+
+func StartGameLoop(funct int) { //Fonction qui lance la boucle de jeu
+	if funct == 1 { //
+		fmt.Printf("Good Luck, you have %v attempts.\n", game.Attempts)
+	} else if funct == 2 {
+		fmt.Printf("Welcome back, you have %v attempts left.\n", game.Attempts)
+	}
+	for {
+		if game.Attempts < 10 { //Permet de print le pendu que si on a moins de 10 essais
+			b1hangman.PrintHangman(game.Attempts)
 		}
-		PrintRunesForHangman(masked) //Fonction spéciale pour print un array de Rune
-		reader := bufio.NewReader(os.Stdin) // Création d'un reader sur l'input
-		fmt.Print("Choose: ")
-		input, _, _ := reader.ReadRune() //Je set le reader pour qu'il lise une rune
-		if helpers.ContainsForRunes(toFind, input) { //boucle si la rune est une lettre du hangman
-			masked= b1hangman.CheckEntry(input, toFind, masked) //Fonction mettre a jour le mot avec la nouvelle lettre
-			if !helpers.ContainsForRunes(masked, '_'){ //Checker si le mot est trouvé
-				PrintRunesForHangman(masked)
+		helpers.PrintHangmanWord(game.Masked) //Print le mot masqué
+		inputHelper() //Fonction qui permet de choisir une lettre 
+		if strings.Contains(game.ToFind, input) { 
+			game.UpdateMasked(b1hangman.CheckEntry(input, game.ToFind, game.Masked)) 
+			if !strings.Contains(game.Masked, "_") { 
+				helpers.PrintHangmanWord(game.Masked) 
 				fmt.Println("\nCongrats !")
-				break 
+				break
 			}
 		} else {
-			Attempts--
+			game.Attempts--
 		}
-		if Attempts == 0 { // Si il n'y a plus de vie
-			b1hangman.PrintHangman(Attempts)
+		if game.Attempts == 0 {
+			b1hangman.PrintHangman(game.Attempts)
 			fmt.Println("Game over")
 			fmt.Println("====================")
 			fmt.Print("The word was : ")
-			PrintRunesForHangman(toFind)
+			helpers.PrintHangmanWord(game.ToFind)
 			break
 		}
 	}
 }
 
-func PrintRunesForHangman(word []rune){
-	for i, r := range word{ // Parcours la liste de rune
-		fmt.Print(string(r) + " ") 
-		if i < len(word) - 1 { //Condition pour print seulement un espace 
-			fmt.Print(" ")
+func inputHelper() string { //Fonction qui permet de choisir une lettre
+	fmt.Print("Choose: ") 
+	reader := bufio.NewScanner(os.Stdin)
+	reader.Scan() 
+	input = strings.TrimSpace(reader.Text())
+	if input == "STOP" { //Permet de stopper la partie et de sauvegarder
+		game.SaveGame()
+		os.Exit(3)
+	} else { 
+		if len(input) == 0 {
+			fmt.Println("Please enter a letter")
+			return inputHelper()
+		} else if len(input) > 1 {
+			fmt.Println("Please enter only one letter")
+			return inputHelper()
+		} else {
+			input = string(input[0])
 		}
 	}
-	fmt.Print("\n")
+	return input
+}
+
+/** ============= Gestion des Saves ============= */
+
+func newGame() *hangmanData { //Fonction qui permet de créer une nouvelle partie
+	return &hangmanData{
+		ToFind:   "debug",
+		Masked:   "_____",
+		Attempts: 10,
+	}
+}
+
+func (game *hangmanData) LoadGame() { //Fonction qui permet de charger une partie sauvegardée
+	data, err := os.ReadFile("save.json")
+	if err != nil {
+		panic(err)
+	}
+
+	err = json.Unmarshal(data, game)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func (game *hangmanData) UpdateToFind(toFind string) { //Fonction qui permet de set le mot à trouver
+	game.ToFind = toFind
+}
+
+func (game *hangmanData) UpdateMasked(masked string) { //Fonction qui permet de set le mot masqué
+	game.Masked = masked
+}
+
+func (game *hangmanData) UpdateAttempts(attempts int) { //Fonction qui permet de set le nombre d'essais
+	game.Attempts = attempts
+}
+
+func (game *hangmanData) SaveGame() { //Fonction qui permet de sauvegarder la partie
+	data, err := json.Marshal(game)
+	if err != nil {
+		panic(err)
+	}
+
+	err = os.WriteFile("save.json", data, 0644)
+	if err != nil {
+		panic(err)
+	}
 }

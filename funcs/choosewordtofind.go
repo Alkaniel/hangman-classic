@@ -6,7 +6,7 @@ import (
 	"os"
 )
 /** Fonction qui choisi mon mot (Il pourra être set plus tard avec la difficulté, c'est preset)*/
-func ChooseWordToFind(difficulty int) []rune {
+func ChooseWordToFind(difficulty int) string {
 	path := "ressources/words.txt"
 
 	switch difficulty { //Regarde le choix de la difficulté et renvoie vers le bon fichier
@@ -23,7 +23,7 @@ func ChooseWordToFind(difficulty int) []rune {
 	file, err := os.Open(path) // Ouvre le fichier
  	if err != nil { // Gère si le fichier n'existe pas
 		toReturn = "Error opening file: open " + file.Name() + ": The system cannot find the file specified."
-		return []rune(toReturn)
+		return string(toReturn)
 	}
 	defer file.Close()
 
@@ -38,7 +38,7 @@ func ChooseWordToFind(difficulty int) []rune {
 	_, err = file.Seek(0, 0) //Reset le pointer pour éviter le OutOfBounds Error
 	if err != nil {
 		toReturn = "Eroor opening file: open" + path + ": The system connot find the file specified"
-		return []rune(toReturn)
+		return string(toReturn)
 	}
 
 	scanner2 := bufio.NewScanner(file) //Nouvelle lecture du fichier
@@ -53,12 +53,5 @@ func ChooseWordToFind(difficulty int) []rune {
 		}
 		lineRead++ // Sinon on descends.
 	}
-
-	var toReturnAsRune []rune //Transformer mon string en rune
-
-	for _, r := range toReturn{
-		toReturnAsRune = append(toReturnAsRune, r) 
-	}
-
-	return []rune(toReturn)
+	return toReturn
 }
