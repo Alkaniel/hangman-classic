@@ -15,7 +15,7 @@ var input string
 type hangmanData struct {
 	ToFind   string `json:"toFind"`
 	Masked   string `json:"masked"`
-	Attempts int `json:"Attempts"`
+	Attempts int `json:"attempts"`
 }
 
 var game = newGame()
@@ -35,7 +35,6 @@ func main() {
 		game.UpdateAttempts(10) //Fonction qui set le nombre d'essai
 		StartGameLoop(1) //Lance une première partie
 	}
-	
 }
 
 func StartGameLoop(funct int) { //Fonction qui lance la boucle de jeu
@@ -87,6 +86,7 @@ func inputHelper() string { //Fonction qui permet de choisir une lettre
 	input = strings.TrimSpace(reader.Text())
 	if input == "STOP" { //Permet de stopper la partie et de sauvegarder
 		game.SaveGame()
+		fmt.Println("Game saved. Goodbye !")
 		os.Exit(3)
 	} else { 
 		input = strings.ToLower(input)
