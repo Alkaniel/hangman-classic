@@ -72,7 +72,7 @@ func StartGameLoop(funct int) { //Fonction qui lance la boucle de jeu
 				fmt.Println("Game over")
 				fmt.Println("====================")
 				fmt.Print("The word was : ")
-				helpers.PrintHangmanWord(game.ToFind)
+				helpers.PrintHangmanWord(strings.ToUpper(game.ToFind))
 				break
 			}
 		} 
